@@ -131,7 +131,36 @@ const pedirCarta = (player) => {
   //get score form a card and set score for player 
   setScore(getScore(card),player);
 }
-
+const winner = (player) => {
+  if(player == 'machine'){
+    let score = maquina_titulo.textContent
+    maquina_titulo.textContent = 'LA MAQUINA HA GANADO LA PARTIDA CON '+score+' PUNTOS'
+  }else{
+    let score = jugador_titulo.textContent
+    jugador_titulo.textContent = 'HAS GANADO LA PARTIDA CON '+score+' PUNTOS'
+  }
+}
+const endGame = () => {
+  plantarse.classList.add('ocultar')
+  pedir.classList.add('ocultar')
+  nueva_partida.classList.add('mostrar')
+}
+/**
+ * function to evaluate which is the winner
+ */
+const evaluateGame = () => {
+  if((parseFloat(jugador_titulo.textContent) <= 7.5 
+  && parseFloat(maquina_titulo.textContent) < parseFloat(jugador_titulo.textContent))
+  || parseFloat(maquina_titulo.textContent) > 7.5){
+    winner('player')
+  }else{
+    winner('machine')
+  }
+  endGame()
+}
+/**
+ * function to make machine play automatically
+ */
 const machineStartsGame = () => {
   pedirCarta('machine')
   if(parseFloat(jugador_titulo.textContent) < 7.5){
@@ -141,14 +170,23 @@ const machineStartsGame = () => {
       pedirCarta('machine')
     }
   }
+  evaluateGame()
 
 }
-
+/**
+ * function to dont let player keep playing by get button pedir disabled and let mahine begin to play
+ */
 const finJugador = () => {
   //disabled button to keep playing
   pedir.disabled = true
   //machine starts to play
   machineStartsGame()
+}
+/**
+ * function to reload page to play again
+ */
+const reiniciarJuego = () => {
+  location.reload()
 }
 
 // Funciones
@@ -159,4 +197,4 @@ pedir.addEventListener("click", startGame => (
   pedirCarta('user')
 ));
 plantarse.addEventListener("click", finJugador);
-// nueva_partida.addEventListener("click", reiniciarJuego);
+nueva_partida.addEventListener("click", reiniciarJuego);
