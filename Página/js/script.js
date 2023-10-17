@@ -75,7 +75,6 @@ const createCard = () => {
  * @return number value from real card
  */
 const getScore = (card) => {
-  console.log(card)
   return card.src.substring(card.src.lastIndexOf('/') + 1,card.src.lastIndexOf('/') + 3)
 }
 /**
@@ -83,50 +82,81 @@ const getScore = (card) => {
  * 
  * @param {string} score 
  */
-const setScore = (score) => {
+const setScore = (score,player) => {
   if(score < 10 ){
     score = score[1]
   }else{
     score = '0.5'
   }
-  console.log(score)
-  if(jugador_titulo.textContent != ''){
-    jugador_titulo.textContent  = parseFloat(score) + parseFloat(parseFloat(jugador_titulo.textContent))
+  if(player == 'user'){
+    if(jugador_titulo.textContent != ''){
+      jugador_titulo.textContent  = parseFloat(score) + parseFloat(parseFloat(jugador_titulo.textContent))
+    }else{
+      jugador_titulo.textContent = score
+    }
+    if(parseFloat(jugador_titulo.textContent) > 7.5){
+      //disabled button to keep playing
+      pedir.disabled = true
+      machineStartsGame()
+     }
   }else{
-    jugador_titulo.textContent = score
+    if(maquina_titulo.textContent != ''){
+      maquina_titulo.textContent  = parseFloat(score) + parseFloat(parseFloat(maquina_titulo.textContent))
+    }else{
+      maquina_titulo.textContent = score
+    }
   }
-  if(parseFloat(jugador_titulo.textContent > 7.5)){
-    //callingn a function to the machine play
-  }
+  
 }
 /**
  * function for show a card through screen
  * 
  * @param {HTMLImageElement} card 
  */
-const putCard = (card) => {
-  jugador_visor.appendChild(card)
+const putCard = (card,player) => {
+  if(player == 'user'){
+    jugador_visor.appendChild(card)
+  }else{
+    maquina_visor.appendChild(card)
+  }
 }
 /**
  * function for calling function to create and insert a card end its score
  */
-const pedirCarta = () => {
+const pedirCarta = (player) => {
   //storage img html element in a variable
   const card = createCard();
   //insert a card into DOM
-  putCard(card)
+  putCard(card,player)
   //get score form a card and set score for player 
-  setScore(getScore(card));
+  setScore(getScore(card),player);
+}
+
+const machineStartsGame = () => {
+  pedirCarta('machine')
+  if(parseFloat(jugador_titulo.textContent) < 7.5){
+    console.log('entro en el if')
+    //machine wins with only one card
+    while(parseFloat(jugador_titulo.textContent) >= parseFloat(maquina_titulo.textContent)){
+      pedirCarta('machine')
+    }
+  }
+
 }
 
 const finJugador = () => {
-
+  //disabled button to keep playing
+  pedir.disabled = true
+  //machine starts to play
+  machineStartsGame()
 }
 
 // Funciones
 
 // Eventos
 // document.addEventListener("DOMContentLoaded", barajarCartas);
-pedir.addEventListener("click", pedirCarta);
+pedir.addEventListener("click", startGame => (
+  pedirCarta('user')
+));
 plantarse.addEventListener("click", finJugador);
 // nueva_partida.addEventListener("click", reiniciarJuego);
